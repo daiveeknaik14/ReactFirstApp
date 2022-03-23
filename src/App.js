@@ -6,6 +6,7 @@ class App extends Component {
   shortList;
 
   constructor() {
+    console.log("Constructor")
     super();
     this.state = {
       users: [],
@@ -15,6 +16,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log("Mounting")
     fetch('https://jsonplaceholder.typicode.com/users')
       .then((userList) => userList.json())
       .then((userList) => {
@@ -27,31 +29,34 @@ class App extends Component {
       });
   }
 
-  changeUserList() {
-    this.shortList = this.state.users.filter((user) => {
-      return user.name.toLocaleLowerCase().includes(this.state.searchString);
-    })
+  changeUserList = (event) => {
+    console.log("Change User List")
+    const searchString = event.target.value.toLocaleLowerCase();
+    this.setState(() => {
+      return { searchString: searchString };
+    });
   }
 
   render() {
+    console.log("Render")
+
+    const { users, searchString } = this.state;
+    const { changeUserList } = this;
+
+    const shortList = users.filter((user) => {
+      return user.name.toLocaleLowerCase().includes(searchString);
+    })
+
     return (
       <div className="App">
         <input
           className = 'search-box'
           type = 'search'
           placeholder = 'Search Users'
-          onChange = {
-            (event) => {
-              const seachString = event.target.value.toLocaleLowerCase();
-              this.setState(() => {
-                return { searchString: seachString };
-              });
-              this.changeUserList();
-            }
-          }
+          onChange = { changeUserList }
         />
         {
-          this.shortList.map((user) => {
+          shortList.map((user) => {
             return (
               <div key={user.id}> 
                 <h1>{user.name}</h1>
